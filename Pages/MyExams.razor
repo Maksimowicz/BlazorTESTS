@@ -5,6 +5,7 @@
 
 @inject ExamsService ExamsServices
 @inject LoginHandlerService loginHandleServices
+@inject NavigationManager NavigationManager
 <h1>My Exams</h1>
 <h2>Wykonane egzaminy</h2>
 
@@ -100,6 +101,9 @@
         </table>
     </div>
 
+    <div>
+        <button class="btn-primary" @onclick="navToCreateExam">Create exam!</button>
+    </div>
 
     @code {
         [Parameter]
@@ -121,7 +125,7 @@
 
         protected override void OnInitialized()
         {
-           
+
         }
 
         protected override async Task OnInitializedAsync()
@@ -150,6 +154,10 @@
             TESTTEMP = data.Name;
         }
 
+        void navToCreateExam()
+        {
+             NavigationManager.NavigateTo("/CreateExam");
+        }
 
 
 

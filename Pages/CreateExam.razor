@@ -10,9 +10,9 @@
 
 @if (creatingStep == 0)
 {
-<div class="@headerCreateClass">
+<div class="form-group">
     <label for="titleInput">Title</label>
-    <input class="form-control" id="titleInput" placeholder="Exam title" @bind="@examtitle" />
+    <input class="@classTitle" id="titleInput" placeholder="Exam title" @bind="@examtitle" />
     <div class="invalid-feedback">Title already taken</div>
 </div>
     <div class="form-group">
@@ -31,7 +31,7 @@
 
     string examtitle;
     string examDescription;
-    string headerCreateClass = "form-group";
+    string classTitle = "form-control";
 
 
     protected override void OnInitialized()
@@ -42,14 +42,14 @@
 
     void checkIfCanCreate()
     {
-        if(createExamService.checkIfTitleIsAvail(examDescription))
+        if(createExamService.checkIfTitleIsAvail(examtitle))
         {
             createExamService.initializeExam(loginHandleServices.userId, examtitle, examDescription);
             creatingStep++;
         }
         else
         {
-            headerCreateClass += " invalid-feedback";
+            classTitle += " is-invalid";
         }
 
     }

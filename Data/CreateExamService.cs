@@ -76,7 +76,7 @@ namespace BlazorTEST.Data
             {
                 var returnValue = context.Exams.Any(x => x.Title == title);
 
-                return returnValue;
+                return !returnValue;
             };
         }
     }
