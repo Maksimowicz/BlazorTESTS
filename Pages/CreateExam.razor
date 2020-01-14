@@ -10,10 +10,11 @@
 
 @if (creatingStep == 0)
 {
-    <div class="form-group">
-        <label for="titleInput">Title</label>
-        <input class="form-control" id="titleInput" placeholder="Exam title" @bind="@examtitle" />
-    </div>
+<div class="@headerCreateClass">
+    <label for="titleInput">Title</label>
+    <input class="form-control" id="titleInput" placeholder="Exam title" @bind="@examtitle" />
+    <div class="invalid-feedback">Title already taken</div>
+</div>
     <div class="form-group">
         <label for="examDescription">Title</label>
         <input class="form-control" id="examDescription" placeholder="Exam title" @bind="@examDescription" />
@@ -30,7 +31,7 @@
 
     string examtitle;
     string examDescription;
-
+    string headerCreateClass = "form-group";
 
 
     protected override void OnInitialized()
@@ -48,7 +49,7 @@
         }
         else
         {
-
+            headerCreateClass += " invalid-feedback";
         }
 
     }
