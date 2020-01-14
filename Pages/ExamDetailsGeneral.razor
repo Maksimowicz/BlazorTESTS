@@ -1,0 +1,138 @@
+﻿@page "/GeneralDetails/{ExamId}"
+@using static BlazorTEST.Classes.DataModel.DataModelRepository;
+@using BlazorTEST.Data
+@using Blazorise.Charts
+
+@inject ExamsService ExamsServices
+
+<h1>Exam details - @examListPageItem.ExamTitle</h1>
+
+<div class="row">
+    <div class="col-sm-5 flex-column">
+        <h2>Basics</h2>
+        <table class="table">
+            <tr>
+                <td class="font-weight-bold">Id</td>
+                <td class="text-center">@examListPageItem.ExamId</td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">Title</td>
+                <td class="text-center">@examListPageItem.ExamTitle</td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">Description</td>
+                <td class="text-center">@examListPageItem.ExamDescription</td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">Question count</td>
+                <td class="text-center">@examListPageItem.ExamQuestionCount</td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">Taken count</td>
+                <td class="text-center">@examListPageItem.ExamTakenCount</td>
+            </tr>
+            <tr>
+                <td class="font-weight-bold">Created By</td>
+                <td class="text-center">@examListPageItem.CreatedBy</td>
+            </tr>
+        </table>
+
+    </div>
+    <div class="col-sm-7">
+        <h2>Statistics</h2>
+        <div class="d-flex flex-column">
+            <div>
+                <LineChart @ref="takenChart" TItem="int" />
+            </div>
+            <div>
+                <text>Passed percentage: @examStatistics.passedPercentage</text>
+            </div>
+            <div>
+                <text>First time flawless: @examStatistics.firstTimeFlawless</text>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string ExamId { get; set; }
+
+    public Int64 ExamIdInt { get; set; }
+
+
+    ExamStatistics examStatistics = new ExamStatistics();
+    ExamListPageItem examListPageItem = new ExamListPageItem();
+    LineChart<int> takenChart { get; set; }
+    protected bool Rendered = false;
+
+    List<string> backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f), ChartColor.FromRgba(54, 162, 235, 0.2f), ChartColor.FromRgba(255, 206, 86, 0.2f), ChartColor.FromRgba(75, 192, 192, 0.2f), ChartColor.FromRgba(153, 102, 255, 0.2f), ChartColor.FromRgba(255, 159, 64, 0.2f) };
+    List<string> borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f), ChartColor.FromRgba(54, 162, 235, 1f), ChartColor.FromRgba(255, 206, 86, 1f), ChartColor.FromRgba(75, 192, 192, 1f), ChartColor.FromRgba(153, 102, 255, 1f), ChartColor.FromRgba(255, 159, 64, 1f) };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+
+        if (firstRender)
+        {
+            await HandleRedraw();
+        }
+    }
+
+    async Task HandleRedraw()
+    {
+        takenChart.Clear();
+
+        takenChart.AddLabel(examStatistics.takenGraph.Select(x => x.date.ToString()).ToArray());
+
+        takenChart.AddDataSet(GetLineChartDataset());
+
+        await takenChart.Update();
+    }
+
+    LineChartDataset<int> GetLineChartDataset()
+    {
+        return new LineChartDataset<int>
+        {
+            Label = "Taken chart",
+            Data = getTakenAmount(),
+            BackgroundColor = backgroundColors,
+            BorderColor = borderColors,
+            Fill = true,
+            PointRadius = 2,
+            BorderDash = new List<int> { }
+        };
+    }
+
+    protected override void OnInitialized()
+    {
+        ExamIdInt = Convert.ToInt64(ExamId);
+        examStatistics = ExamsServices.getSpecifiedExamStatistics(ExamIdInt);
+        examListPageItem = ExamsServices.getSpecifiedExam(ExamIdInt);
+      
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await getTheData();
+    
+    }
+
+    protected async Task getTheData()
+    {
+      
+    }
+
+
+    protected List<int> getTakenAmount()
+    {
+        var takenAmount = examStatistics.takenGraph.Select(x => x.takenCount).ToList();
+        return takenAmount;
+
+    }
+
+
+
+
+}

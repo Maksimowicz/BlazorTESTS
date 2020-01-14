@@ -1,0 +1,51 @@
+﻿@page "/LoginPage"
+@using BlazorTEST.Data
+@inject LoginHandlerService loginHandleServices
+
+<h1>Login page</h1>
+@if (!loggedIn)
+{
+
+        <div class="form-group">
+            <label for="exampleInputEmail1">Login</label>
+            <input class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" @bind="login"/>
+            <small id="emailHelp" class="form-text text-muted">Boi, dont wait start examin'</small>
+        </div>
+        <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input  type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" @bind="@password" />
+        </div>
+
+        <button  class="btn btn-primary" @onclick="loginInService">Submit</button>
+ 
+}
+else
+{
+<div>
+    <text>Jesteś zalogowany!</text>
+    <button type="submit" class="btn btn-primary" @onclick="logOutFromService">Logout</button>
+</div>
+}
+
+@code {
+    string login;
+    string password;
+
+    bool loggedIn;
+    public void loginInService()
+    {
+        loggedIn = loginHandleServices.login(login, password);
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        loggedIn = loginHandleServices.isLogged();
+    }
+
+    void logOutFromService()
+    {
+        loggedIn = !loginHandleServices.logout();
+    }
+
+}

@@ -1,0 +1,56 @@
+﻿@page "/CreateExam"
+@using BlazorTEST.Data
+
+@inject CreateExamService createExamService
+@inject LoginHandlerService loginHandleServices
+
+<h3>CreateExam</h3>
+
+<h1>Stwórz egzamin</h1>
+
+@if (creatingStep == 0)
+{
+    <div class="form-group">
+        <label for="titleInput">Title</label>
+        <input class="form-control" id="titleInput" placeholder="Exam title" @bind="@examtitle" />
+    </div>
+    <div class="form-group">
+        <label for="examDescription">Title</label>
+        <input class="form-control" id="examDescription" placeholder="Exam title" @bind="@examDescription" />
+    </div>
+    <button type="submit" class="btn btn-primary" @onclick="checkIfCanCreate">Create exam!</button>
+}
+
+
+
+
+@code {
+
+    int creatingStep = 0;
+
+    string examtitle;
+    string examDescription;
+
+
+
+    protected override void OnInitialized()
+    {
+
+
+    }
+
+    void checkIfCanCreate()
+    {
+        if(createExamService.checkIfTitleIsAvail(examDescription))
+        {
+            createExamService.initializeExam(loginHandleServices.userId, examtitle, examDescription);
+            creatingStep++;
+        }
+        else
+        {
+
+        }
+
+    }
+
+}

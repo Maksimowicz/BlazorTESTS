@@ -1,0 +1,158 @@
+﻿@page "/ExamForm/{ExamId}"
+
+@using BlazorTEST.Data
+@using Microsoft.EntityFrameworkCore;
+@using static BlazorTEST.Classes.DataModel.DataModelRepository;
+
+@inject QuestionsService questionsService
+@inject LoginHandlerService loginHandleServices
+<h3>ExamForm</h3>
+
+
+<div class="@StartClass" >
+    <div>
+        <h2>
+            Do you want to start exam?
+        </h2>
+    </div>
+    <div>
+        <div class="flex-row">
+            <button class="btn btn-primary" @onclick="StartExam">Rozpocznij!</button>
+        </div>
+    </div>
+</div>
+
+
+@if(examStarted)
+{
+    <div>
+        <text>
+            @actualQuestion.questionText
+        </text>
+    </div>
+    <div>
+        <form>
+            @foreach (var anwser in anwsers)
+            {
+                <text>
+                    @anwser.anwserText;
+                    <input type="checkbox"  @bind="anwser.isMarked"  @onclick="eventArgs => { CheckboxClicked(anwser); }" /><br />
+                 
+                </text>
+
+            }
+        </form>
+    </div>
+    <div>
+        <button class="btn btn-primary" @onclick="getNextQuestion">Get Next Question!</button>
+    </div>
+}
+
+@if(showResult)
+{
+<div class="flex-row">
+    <div>
+        <text>
+            Odpowiedziałeś dobrze na: @questionsService.getScore() z @questionsService.getQuestionCount() pytań!
+        </text>
+    </div>
+    <div>
+        <text>
+            Uzyskałeś: (@questionsService.getScorePercent()) % procent!
+        </text>
+    </div>
+    @if (@questionsService.getScorePercent() > 0.5)
+    {
+        <div>
+            <text>Zdałeś!</text>
+        </div>
+    }
+    else
+    {
+        <div>
+            <text>Niestety nie udało się zdać. Spróbuj jeszcze raz!</text>
+        </div>
+    }
+</div>
+}
+
+
+
+@code {
+    [Parameter]
+    public string ExamId { get; set; }
+
+    Int64 examIdInt;
+    Boolean examStarted;
+    Boolean showResult = false;
+
+    List<Question> question = new List<Question>();
+    List<Anwser> anwsers = new List<Anwser>();
+    Boolean[] selected;
+
+
+    Question actualQuestion;
+    Anwser actualAnwser;
+    int questionIndex = 0;
+
+    string StartClass = "flex-column";
+    string resultClass = "flex-column d-none";
+
+
+    protected override void OnInitialized()
+    {
+        examIdInt = Convert.ToInt64(ExamId);
+        questionsService.initQuestionService(examIdInt,loginHandleServices.userId);
+        question = questionsService.getQuestions();
+        examStarted = false;
+        // anwsers = questionsService.getAnwsers();
+
+    }
+
+    void StartExam()
+    {
+        examStarted = true;
+        StartClass += " d-none";
+        questionRetrive();
+    }
+
+    void getNextQuestion()
+    {
+        questionIndex++;
+        if(questionIndex == questionsService.getQuestionCount())
+        {
+            questionsService.calculateAnwser(anwsers);
+            showResult = true;
+            examStarted = false;
+            questionsService.finalizeExam();
+            return;
+        }
+        questionRetrive();
+
+    }
+
+    void questionRetrive()
+    {
+        questionsService.calculateAnwser(anwsers);
+
+        actualQuestion = question[questionIndex];
+        anwsers = questionsService.getAnwsers(actualQuestion.questionId);
+        selected = new Boolean[anwsers.Count()];
+    }
+
+
+    void CheckboxClicked(Anwser anwser)
+    {
+
+        if(!actualQuestion.isMultiChoice)
+        {
+            foreach(var anwserInner in anwsers.Where(x => x.answerId != anwser.answerId))
+            {
+                anwserInner.isMarked = false;
+            }
+        }
+    }
+
+
+
+}

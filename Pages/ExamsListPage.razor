@@ -1,0 +1,111 @@
+﻿@page "/AllExams"
+@using BlazorTEST.Data
+@using Microsoft.EntityFrameworkCore;
+@using static BlazorTEST.Classes.DataModel.DataModelRepository;
+@using Microsoft.AspNetCore.Http.Extensions;
+
+@inject NavigationManager NavigationManager
+@inject ExamsService ExamsServices
+
+
+<ContextMenu Id="listPageMenu">
+    <Item OnClick="@OnClick">Show details</Item>
+    <Item OnClick="@GetExam">Take</Item>
+    <Item OnClick="@OnClick">Find similar</Item>
+</ContextMenu>
+
+<ContextMenu Id="myMenu">
+    <Item OnClick="@OnClick">Show details</Item>
+    <Item OnClick="@OnClick">Retake</Item>
+    <Item OnClick="@OnClick">Find similar</Item>
+</ContextMenu>
+
+
+<h1>Exams List</h1>
+<div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>
+                    Id
+                </th>
+                <th>
+                    Tytuł
+                </th>
+                <th>
+                    Przeprowadzony
+                </th>
+                <th>
+                    Pytania
+                </th>
+                <th>
+                    Utworzony przez
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var exam in exams)
+            {
+                <ContextMenuTrigger WrapperTag="tr" MenuId="listPageMenu" Data="exam">
+
+            <td>
+                <text>@exam.ExamId</text>
+            </td>
+
+            <td>
+                <text>@exam.ExamTitle</text>
+            </td>
+            <td>
+                <text>@exam.ExamTakenCount</text>
+            </td>
+            <td>
+                <text>@exam.ExamQuestionCount</text>
+            </td>
+            <td>
+                <text>@exam.CreatedBy</text>
+            </td>
+
+            </ContextMenuTrigger>
+
+
+        }
+            </tbody>
+
+        </table>
+    </div>
+
+
+    @code {
+        List<ExamListPageItem> exams = new List<ExamListPageItem>();
+        int examCount = 0;
+        int itemsOnOnePage = 0;
+
+        protected override async Task OnInitializedAsync()
+        {
+            examCount = await ExamsServices.getListsCount();
+            exams = await ExamsServices.getExamsList(examCount);
+        }
+
+        public void OnClick(ItemClickEventArgs e)
+        {
+            var data = (ExamListPageItem)e.Data;
+            NavigationManager.NavigateTo(String.Format("/GeneralDetails/{0}", data.ExamId));
+
+        }
+
+        public void GetExam(ItemClickEventArgs e)
+        {
+            var data = (ExamListPageItem)e.Data;
+            NavigationManager.NavigateTo(String.Format("/ExamForm/{0}", data.ExamId));
+
+        }
+
+        //void OnClick(ItemClickEventArgs e)
+        //{
+        //    string handled = e.ContextMenuTargetId;
+        //    var data = (ExamsPassed)e.Data;
+        //    TESTTEMP = data.Name;
+        //}
+
+
+    }
