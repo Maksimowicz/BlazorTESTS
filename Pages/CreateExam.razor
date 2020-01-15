@@ -1,6 +1,8 @@
 ﻿@page "/CreateExam"
 @using BlazorTEST.Data
 
+@using BlazorTEST.Models;
+@using static BlazorTEST.Classes.DataModel.DataModelRepository;
 @inject CreateExamService createExamService
 @inject LoginHandlerService loginHandleServices
 
@@ -10,16 +12,45 @@
 
 @if (creatingStep == 0)
 {
-<div class="form-group">
-    <label for="titleInput">Title</label>
-    <input class="@classTitle" id="titleInput" placeholder="Exam title" @bind="@examtitle" />
-    <div class="invalid-feedback">Title already taken</div>
-</div>
+    <div class="form-group">
+        <label for="titleInput">Title</label>
+        <input class="@classTitle" id="titleInput" placeholder="Exam title" @bind="@examtitle" />
+        <div class="invalid-feedback">Title already taken</div>
+    </div>
     <div class="form-group">
         <label for="examDescription">Title</label>
         <input class="form-control" id="examDescription" placeholder="Exam title" @bind="@examDescription" />
     </div>
     <button type="submit" class="btn btn-primary" @onclick="checkIfCanCreate">Create exam!</button>
+
+}
+else if (creatingStep == 1)
+{
+    <div class="form-group">
+        <label for="questionInput">Question text</label>
+        <input class="@questionTextClass" id="questionInput" placeholder="Question text" @bind="@QuestionText" />
+        <input type="checkbox" @bind="isMultiChoice" @onclick="eventArgs => { clearAnwsers(); }"/>
+    </div>
+
+    @foreach (var anwser in anwsersActual)
+    {
+        <div class="form-group">
+            <input class="form-control" @bind="@anwser.anwserText" />
+            <input type="checkbox" @bind="anwser.isProper" @onclick="eventArgs => { CheckboxClicked(anwser); }" />
+            <br />
+        </div>
+    }
+
+    <button type="submit" class="btn btn-primary" @onclick="createQuestionForm">Create next question!</button>
+    <button type="submit" class="btn btn-primary" @onclick="finalizeExam">Finihs exam!</button>
+
+
+}
+else if (creatingStep == 2)
+{
+    <div>
+        <text>Dziękujemy za utworzenie rekordu!</text>
+    </div>
 }
 
 
@@ -33,18 +64,49 @@
     string examDescription;
     string classTitle = "form-control";
 
+    string QuestionText = "";
+    bool isMultiChoice;
+
+    string questionTextClass = "form-control-lg";
+
+
+
+    List<Anwser> anwsersActual;
+    Exams examHeader;
+    Question question;
+
+
+    private void initializeClear()
+    {
+
+        anwsersActual.Clear();
+
+        for (int i = 0; i < 4; i++)
+        {
+            anwsersActual.Add(
+                new Anwser
+                {
+                    isProper = false,
+                    anwserText = "",
+                    anwserIdMock = i
+                });
+        }
+    }
+
+
 
     protected override void OnInitialized()
     {
-
+        anwsersActual = new List<Anwser>();
+        initializeClear();
 
     }
 
     void checkIfCanCreate()
     {
-        if(createExamService.checkIfTitleIsAvail(examtitle))
+        if (createExamService.checkIfTitleIsAvail(examtitle))
         {
-            createExamService.initializeExam(loginHandleServices.userId, examtitle, examDescription);
+            examHeader = createExamService.initializeExam(loginHandleServices.userId, examtitle, examDescription);
             creatingStep++;
         }
         else
@@ -52,6 +114,44 @@
             classTitle += " is-invalid";
         }
 
+    }
+
+    void CheckboxClicked(Anwser anwser)
+    {
+
+        if (!isMultiChoice)
+        {
+            foreach (var anwserInner in anwsersActual.Where(x => x.anwserIdMock != anwser.anwserIdMock))
+            {
+                anwserInner.isProper = false;
+            }
+        }
+    }
+
+    void clearAnwsers()
+    {
+        foreach (var anwserInner in anwsersActual)
+        {
+            anwserInner.isProper = false;
+        }
+    }
+
+    void createQuestionForm()
+    {
+        createExamService.createQuestion(isMultiChoice, QuestionText);
+
+        foreach (var anwserInner in anwsersActual)
+        {
+            createExamService.addAnswerToQuestion(anwserInner.anwserText, anwserInner.isProper);
+        }
+        this.initializeClear();
+        isMultiChoice = false;
+        QuestionText = "";
+    }
+
+    void finalizeExam()
+    {
+        creatingStep++;
     }
 
 }

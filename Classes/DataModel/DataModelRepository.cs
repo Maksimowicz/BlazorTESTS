@@ -93,6 +93,7 @@ namespace BlazorTEST.Classes.DataModel
             public string anwserText { get; set; }
 
             public bool isMarked { get; set; }
+            public Int64 anwserIdMock { get; set; }
         }
     }
 }

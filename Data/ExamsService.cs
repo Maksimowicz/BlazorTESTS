@@ -174,7 +174,7 @@ namespace BlazorTEST.Data
                                   };
 
                 var graphStatsQuery = from graphStats in context.TakenCountByDate
-                                      where graphStats.ExamId == 1
+                                      where graphStats.ExamId == examId
                                       select graphStats;
 
                 

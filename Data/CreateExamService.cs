@@ -16,7 +16,7 @@ namespace BlazorTEST.Data
         bool headerCreated;
 
 
-        public void initializeExam(Int64 userId, string title, string description)
+        public Exams initializeExam(Int64 userId, string title, string description)
         {
             questions = new List<Questions>();
             anwsers = new List<Answer>();
@@ -34,9 +34,11 @@ namespace BlazorTEST.Data
                 context.SaveChanges();
 
             };
+
+            return examHeader;
         }
 
-        public void createQuestion(bool isMultiChoice, string questionTekst)
+        public Questions createQuestion(bool isMultiChoice, string questionTekst)
         {
             Questions questionsHelepr = new Questions();
 
@@ -52,6 +54,7 @@ namespace BlazorTEST.Data
 
             questions.Add(questionsHelepr);
 
+            return questionsHelepr;
         }
 
         public void addAnswerToQuestion(string anwserText, bool isProper)
