@@ -15,6 +15,7 @@ namespace BlazorTEST.Classes.DataModel
         /// </summary>
         public class ExamsPassed
         {
+            public Int64 examId { get; set; }
             public string Name { get; set; }
             public float Percent { get; set; }
             public Boolean Passed { get; set; }

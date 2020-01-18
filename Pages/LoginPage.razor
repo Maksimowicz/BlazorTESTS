@@ -8,8 +8,9 @@
 
         <div class="form-group">
             <label for="exampleInputEmail1">Login</label>
-            <input class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" @bind="login"/>
+            <input class="@properClass" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email" @bind="login" />
             <small id="emailHelp" class="form-text text-muted">Boi, dont wait start examin'</small>
+            <div class="invalid-feedback">Wrong credentials</div>
         </div>
         <div class="form-group">
             <label for="exampleInputPassword1">Password</label>
@@ -32,9 +33,15 @@ else
     string password;
 
     bool loggedIn;
+
+    string properClass = "form-control";
     public void loginInService()
     {
         loggedIn = loginHandleServices.login(login, password);
+        if(!loggedIn)
+        {
+            properClass += " is-invalid";
+        }
         StateHasChanged();
     }
 

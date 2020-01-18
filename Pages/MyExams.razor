@@ -11,8 +11,7 @@
 
 <ContextMenu Id="myMenu">
     <Item OnClick="@OnClick">Show details</Item>
-    <Item OnClick="@OnClick">Retake</Item>
-    <Item OnClick="@OnClick">Find similar</Item>
+    <Item OnClick="@GetExam">Retake</Item>
 </ContextMenu>
 
 
@@ -147,11 +146,18 @@
 
         }
 
-        void OnClick(ItemClickEventArgs e)
+        public void OnClick(ItemClickEventArgs e)
         {
-            string handled = e.ContextMenuTargetId;
             var data = (ExamsPassed)e.Data;
-            TESTTEMP = data.Name;
+            NavigationManager.NavigateTo(String.Format("/GeneralDetails/{0}", data.examId));
+
+        }
+
+        public void GetExam(ItemClickEventArgs e)
+        {
+            var data = (ExamsPassed)e.Data;
+            NavigationManager.NavigateTo(String.Format("/ExamForm/{0}", data.examId));
+
         }
 
         void navToCreateExam()

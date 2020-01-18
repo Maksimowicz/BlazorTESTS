@@ -23,6 +23,7 @@ namespace BlazorTEST.Data
                                   where examHistory.UserId == userId
                                   select new ExamsPassed
                                   {
+                                      examId = exams.ExamId,
                                       Name = exams.Title,
                                       Percent = examHistory.Result == null ? 0 : (float)examHistory.Result,
                                       Passed = examHistory.Result > 0.50 ? true : false
