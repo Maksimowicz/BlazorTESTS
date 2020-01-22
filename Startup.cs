@@ -12,6 +12,7 @@ using BlazorTEST.Data;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using BlazorTEST.Classes;
 
 namespace BlazorTEST
 {
@@ -36,6 +37,7 @@ namespace BlazorTEST
             services.AddSingleton<QuestionsService>();
             services.AddSingleton<LoginHandlerService>();
             services.AddSingleton<CreateExamService>();
+            services.AddSingleton<MyService>();
             services.AddBlazorContextMenu();
 
             services
