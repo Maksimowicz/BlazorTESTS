@@ -17,63 +17,83 @@
 </div>
 <div class="form-group">
     <label for="PasswordSecondInput">Password repeat</label>
-    <input class="form-control" type="password" id="PasswordSecondInput" placeholder="Password repeat" @bind="@passwordRepeat" />
+    <input class="@passwordSecondInput_class" type="password" id="PasswordSecondInput" placeholder="Password repeat" @bind="@PasswordRepeat" />
     <div class="invalid-feedback">Passwords not match!</div>
 </div>
 <div class="form-group">
     <label for="EmailInput">Email</label>
-    <input class="form-control" type="email" id="EmailInput" placeholder="Email" @bind="@email" />
-    <div class="invalid-feedback">Email already taken!</div>
+    <input class="form-control" type="email" id="EmailInput" placeholder="Email" @bind="@Email" />
+    <div class="@invalidFeedTaken_class">Email already taken!</div>
+    <div class="@invalidFeedFormat_class">Wrong format of email!</div>
 </div>
-<button type="submit" class="btn btn-primary">Register!</button>
+<button type="submit" class="btn btn-primary" @onclick="registerUser">Register!</button>
 <button type="button" class="btn btn-secondary">Login page</button>
-
+<div class="@warningHide_class">
+    <p class="text-warning">
+        Fill the data properly before registration!
+    </p>
+</div>
 
 
 @code{
-    public string Login { get; set; }
+    public string login { get; set; }
+    public string Login
+    {
+        get { return login; }
+        set { login = value; checkIfLoginIsAvailable(); }
+    }
+
+
     public string password { get; set; }
     public string Password
     {
         get { return password; }
         set { password = value; checkPasswordFirst(); }
     }
-    //{
-    //    get { return password; }
-    //    set
-    //    {
-    //      //  password = value;
-    //        // checkPasswordFirst();
-    //    }
 
-    //}
 
     public string passwordRepeat { get; set; }
-    //{
-    //    get { return passwordRepeat; }
-    //    set
-    //    {
-    //        //    passwordRepeat = value;
-    //        // checkPasswordMatch();
-    //    }
+    public string PasswordRepeat
+    {
+        get { return passwordRepeat; }
+        set { passwordRepeat = value; checkPasswordMatch(); }
+    }
 
-    //}
+    bool isPasswordProper = false;
+    bool isRepeatProper = false;
+    bool isLoginProper = false;
+    bool isEmailProper = false;
+
     public string email { get; set; }
+    public string Email
+    {
+        get { return email; }
+        set { email = value; checkIfMailIsAvailable(); }
+    }
+
     RegistrationService registrationService;
 
     private string loginInput_class { get; set; }
     private string passwordFirstInput_class { get; set; }
     private string passwordSecondInput_class { get; set; }
     private string emailInput_class { get; set; }
+    private string warningHide_class { get; set; }
+    private string invalidFeedTaken_class { get; set; }
+    private string invalidFeedFormat_class { get; set; }
 
 
     private readonly string formControlStr = "form-control";
+    private readonly string invalidFeedbackVisible = "invalid-feedback";
+    private readonly string invalidFeedbackInvisible = "invalid-feedback d-none";
 
     protected override void OnInitialized()
     {
         loginInput_class = formControlStr;
         passwordFirstInput_class = formControlStr;
         passwordSecondInput_class = formControlStr;
+        warningHide_class = "d-none";
+        invalidFeedTaken_class = invalidFeedbackInvisible;
+        invalidFeedFormat_class = invalidFeedbackInvisible;
         registrationService = new RegistrationService();
     }
 
@@ -82,47 +102,82 @@
         if (!registrationService.isPasswordProper(password))
         {
             passwordFirstInput_class += " is-invalid";
+            isPasswordProper = false;
         }
         else
         {
             passwordFirstInput_class = formControlStr;
+            isPasswordProper = true;
         }
     }
 
-    //void checkPasswordMatch()
-    //{
-    //    if(!registrationService.doPasswordsMatch(password, passwordRepeat))
-    //    {
-    //        passwordSecondInput_class += " is-invalid";
-    //    }
-    //    else
-    //    {
-    //        passwordSecondInput_class = formControlStr;
-    //    }
-    //}
+    void checkPasswordMatch()
+    {
+        if (isPasswordProper)
+        {
+            if (!registrationService.doPasswordsMatch(password, passwordRepeat))
+            {
+                passwordSecondInput_class += " is-invalid";
+                isRepeatProper = false;
+            }
+            else
+            {
+                passwordSecondInput_class = formControlStr;
+                isRepeatProper = true;
+            }
+        }
+    }
 
-    //void checkIfMailIsAvailable()
-    //{
-    //    if(!registrationService.isMailAvailable(email))
-    //    {
-    //        emailInput_class += " is-invalid";
-    //    }
-    //    else
-    //    {
-    //        emailInput_class = formControlStr;
-    //    }
-    //}
+    void checkIfMailIsAvailable()
+    {
+        if (registrationService.isEmailProperFormat(email))
+        {
+            if (!registrationService.isMailAvailable(email))
+            {
+                emailInput_class += " is-invalid";
+                isEmailProper = false;
+            }
+            else
+            {
+                emailInput_class = formControlStr;
+                invalidFeedTaken_class = invalidFeedbackVisible;
+                isEmailProper = true;
+            }
+        }
+        else
+        {
+            invalidFeedFormat_class = invalidFeedbackVisible;
+            emailInput_class += " is-invalid";
+             
+        }
+    }
 
+    void checkIfLoginIsAvailable()
+    {
+        if(!registrationService.isLoginAvailable(login))
+        {
+            loginInput_class += " is-invalid";
+            isLoginProper = false;
+        }
+        else
+        {
+            loginInput_class = formControlStr;
+            isLoginProper = true;
+        }
+    }
 
-    //void checkIfCanCreate()
-    //{
-    //    if(!registrationService.isLoginAvailable(Login))
-    //    {
-    //        loginInput_class += " is-invalid";
-    //    }
+    void registerUser()
+    {
+        if(isLoginProper && isLoginProper && isRepeatProper && isEmailProper)
+        {
+            registrationService.registerUser(login, password, email);
+        }
+        else
+        {
+            warningHide_class = "";
+        }
+    }
 
-
-    //}
 
     //void redirectToLogin(){
     //}

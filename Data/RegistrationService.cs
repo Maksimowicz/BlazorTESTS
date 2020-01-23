@@ -11,6 +11,7 @@ namespace BlazorTEST.Data
     {
 
         private readonly string passwordRegex = @"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$";
+        private readonly string emailRegex = @"[a-zA-Z0-9]+[@][a-zA-Z0-9]+[.][a-zA-Z0-9]+";
         public bool isLoginAvailable(string login)
         {
             List<Int64> list = null;
@@ -24,7 +25,7 @@ namespace BlazorTEST.Data
 
                 if (list.Count > 0)
                 {
-                    return true;
+                    return false;
                 }
                 else
                 {
@@ -36,6 +37,8 @@ namespace BlazorTEST.Data
         public bool isMailAvailable(string email)
         {
             List<Int64> list = null;
+
+        
             using (var context = new ExamsDBContext())
             {
                 var isAvailable = from users in context.Users
@@ -83,6 +86,10 @@ namespace BlazorTEST.Data
             return true;
         }
 
+        public bool isEmailProperFormat(string email)
+        {
+            return Regex.Match(email, emailRegex).Success;
+        }
 
     }
 }
