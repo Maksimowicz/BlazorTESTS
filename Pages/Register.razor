@@ -1,0 +1,48 @@
+﻿@page "/Register"
+@using BlazorTEST.Data;
+
+
+<h1>Register in Examinator!</h1>
+
+<div class="form-group">
+    <label for="LoginInput">Login</label>
+    <input class="form-control" id="LoginInput" placeholder="Login" @bind="@Login" />
+    <div class="invalid-feedback">Login already taken</div>
+</div>
+<div class="form-group">
+    <label for="PasswordFirstInput">Password</label>
+    <input class="form-control" type="password" id="PasswordFirstInput" placeholder="Password" @bind="@password" />
+    <div class="invalid-feedback">Password must contain one Capital letter, one digit and one special symbol!</div>
+</div>
+<div class="form-group">
+    <label for="PasswordSecondInput">Password repeat</label>
+    <input class="form-control" type="password" id="PasswordSecondInput" placeholder="Password repeat" @bind="@passwordRepeat" />
+    <div class="invalid-feedback">Passwords not match!</div>
+</div>
+<div class="form-group">
+    <label for="EmailInput">Email</label>
+    <input class="form-control" type="email" id="EmailInput" placeholder="Email" @bind="@email" />
+    <div class="invalid-feedback">Email already taken!</div>
+</div>
+<button type="submit" class="btn btn-primary" @onclick="checkIfCanCreate">Create exam!</button>
+<button type="button" class="btn btn-secondary" @onclick="redirectToLogin">Login page</button>
+
+@code{
+    private string Login {get; set;}
+    private string password {get; set;}
+    private string passwordRepeat {get; set;}
+    private string email {get; set;}
+
+
+    private string loginInput_class { get; set; }
+    private string passwordFirstInput_class { get; set; }
+    private string passwordSecondInput_class { get; set; }
+
+
+    void checkIfCanCreate()
+    {
+    }
+
+    void redirectToLogin(){
+    }
+}
