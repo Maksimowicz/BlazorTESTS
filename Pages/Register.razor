@@ -2,16 +2,17 @@
 @using BlazorTEST.Data;
 
 
+
 <h1>Register in Examinator!</h1>
 
 <div class="form-group">
     <label for="LoginInput">Login</label>
-    <input class="form-control" id="LoginInput" placeholder="Login" @bind="@Login" />
+    <input class="@loginInput_class" id="LoginInput" placeholder="Login" @bind="@Login" />
     <div class="invalid-feedback">Login already taken</div>
 </div>
 <div class="form-group">
     <label for="PasswordFirstInput">Password</label>
-    <input class="form-control" type="password" id="PasswordFirstInput" placeholder="Password" @bind="@password" />
+    <input class="@passwordFirstInput_class" type="password" id="PasswordFirstInput" placeholder="Password" @bind="Password" />
     <div class="invalid-feedback">Password must contain one Capital letter, one digit and one special symbol!</div>
 </div>
 <div class="form-group">
@@ -24,25 +25,105 @@
     <input class="form-control" type="email" id="EmailInput" placeholder="Email" @bind="@email" />
     <div class="invalid-feedback">Email already taken!</div>
 </div>
-<button type="submit" class="btn btn-primary" @onclick="checkIfCanCreate">Create exam!</button>
-<button type="button" class="btn btn-secondary" @onclick="redirectToLogin">Login page</button>
+<button type="submit" class="btn btn-primary">Register!</button>
+<button type="button" class="btn btn-secondary">Login page</button>
+
+
 
 @code{
-    private string Login {get; set;}
-    private string password {get; set;}
-    private string passwordRepeat {get; set;}
-    private string email {get; set;}
+    public string Login { get; set; }
+    public string password { get; set; }
+    public string Password
+    {
+        get { return password; }
+        set { password = value; checkPasswordFirst(); }
+    }
+    //{
+    //    get { return password; }
+    //    set
+    //    {
+    //      //  password = value;
+    //        // checkPasswordFirst();
+    //    }
 
+    //}
+
+    public string passwordRepeat { get; set; }
+    //{
+    //    get { return passwordRepeat; }
+    //    set
+    //    {
+    //        //    passwordRepeat = value;
+    //        // checkPasswordMatch();
+    //    }
+
+    //}
+    public string email { get; set; }
+    RegistrationService registrationService;
 
     private string loginInput_class { get; set; }
     private string passwordFirstInput_class { get; set; }
     private string passwordSecondInput_class { get; set; }
+    private string emailInput_class { get; set; }
 
 
-    void checkIfCanCreate()
+    private readonly string formControlStr = "form-control";
+
+    protected override void OnInitialized()
     {
+        loginInput_class = formControlStr;
+        passwordFirstInput_class = formControlStr;
+        passwordSecondInput_class = formControlStr;
+        registrationService = new RegistrationService();
     }
 
-    void redirectToLogin(){
+    void checkPasswordFirst()
+    {
+        if (!registrationService.isPasswordProper(password))
+        {
+            passwordFirstInput_class += " is-invalid";
+        }
+        else
+        {
+            passwordFirstInput_class = formControlStr;
+        }
     }
+
+    //void checkPasswordMatch()
+    //{
+    //    if(!registrationService.doPasswordsMatch(password, passwordRepeat))
+    //    {
+    //        passwordSecondInput_class += " is-invalid";
+    //    }
+    //    else
+    //    {
+    //        passwordSecondInput_class = formControlStr;
+    //    }
+    //}
+
+    //void checkIfMailIsAvailable()
+    //{
+    //    if(!registrationService.isMailAvailable(email))
+    //    {
+    //        emailInput_class += " is-invalid";
+    //    }
+    //    else
+    //    {
+    //        emailInput_class = formControlStr;
+    //    }
+    //}
+
+
+    //void checkIfCanCreate()
+    //{
+    //    if(!registrationService.isLoginAvailable(Login))
+    //    {
+    //        loginInput_class += " is-invalid";
+    //    }
+
+
+    //}
+
+    //void redirectToLogin(){
+    //}
 }

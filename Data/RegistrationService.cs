@@ -69,6 +69,7 @@ namespace BlazorTEST.Data
         public bool registerUser(string userLogin, string userPassword, string userEmail)
         {
             Users users = new Users();
+
             users.UserLogin = userLogin;
             users.UserPassword = userPassword;
             users.Email = userEmail;

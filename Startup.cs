@@ -39,6 +39,7 @@ namespace BlazorTEST
             services.AddSingleton<CreateExamService>();
             services.AddSingleton<MyService>();
             services.AddBlazorContextMenu();
+            //services.AddSingleton<RegistrationService>();
 
             services
               .AddBlazorise(options =>
