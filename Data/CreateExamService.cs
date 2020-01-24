@@ -82,5 +82,23 @@ namespace BlazorTEST.Data
                 return !returnValue;
             };
         }
+
+        public void deleteExam(Int64 examId)
+        {
+            //Exams exams = null;
+            using (var context = new ExamsDBContext())
+            {
+                var examQ = from exams in context.Exams
+                                   where exams.ExamId == examId
+                                   select exams;
+
+                var examToDelete = examQ.FirstOrDefault();
+
+                context.Exams.Remove(examToDelete);
+                context.SaveChanges();
+
+                return;
+            };
+        }
     }
 }

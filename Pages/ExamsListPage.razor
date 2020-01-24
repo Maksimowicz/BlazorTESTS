@@ -6,19 +6,16 @@
 
 @inject NavigationManager NavigationManager
 @inject ExamsService ExamsServices
+@inject LoginHandlerService loginHandleServices
 
 
 <ContextMenu Id="listPageMenu">
     <Item OnClick="@OnClick">Show details</Item>
-    <Item OnClick="@GetExam">Take</Item>
-    <Item OnClick="@OnClick">Find similar</Item>
+    <Item OnClick="@GetExam" Enabled="@loginHandleServices.isLogged()">Take</Item>
+   
 </ContextMenu>
 
-<ContextMenu Id="myMenu">
-    <Item OnClick="@OnClick">Show details</Item>
-    <Item OnClick="@OnClick">Retake</Item>
-    <Item OnClick="@OnClick">Find similar</Item>
-</ContextMenu>
+
 
 
 <h1>Exams List</h1>
@@ -44,7 +41,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var exam in exams)
+            @foreach (var exam in examsShown)
             {
                 <ContextMenuTrigger WrapperTag="tr" MenuId="listPageMenu" Data="exam">
 
@@ -72,18 +69,51 @@
             </tbody>
 
         </table>
+
+        <div>
+            <nav aria-label="...">
+                <ul class="pagination pagination-lg justify-content-end">
+                    @foreach (int i in vs)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" @onclick="eventArgs => { paginationClicked(i); }">@(i + 1)</a>
+                        </li>
+
+                    }
+                </ul>
+            </nav>
+        </div>
     </div>
 
 
     @code {
         List<ExamListPageItem> exams = new List<ExamListPageItem>();
+        List<ExamListPageItem> examsShown = new List<ExamListPageItem>();
         int examCount = 0;
         int itemsOnOnePage = 0;
+        int[] vs = new int[1];
+
+
+        readonly int pageSize = 10;
+        int pagesAmount = 0;
+
+
+        int pageIndex = 0;
+
 
         protected override async Task OnInitializedAsync()
         {
             examCount = await ExamsServices.getListsCount();
             exams = await ExamsServices.getExamsList(examCount);
+
+            examsShown = exams.GetRange(0, pageSize);
+            pagesAmount = (int)Math.Ceiling((float)exams.Count() / (float)pageSize);
+
+            vs = new int[pagesAmount];
+            for (int i = 0; i < pagesAmount; i++)
+            {
+                vs[i] = i;
+            }
         }
 
         public void OnClick(ItemClickEventArgs e)
@@ -100,12 +130,25 @@
 
         }
 
-        //void OnClick(ItemClickEventArgs e)
-        //{
-        //    string handled = e.ContextMenuTargetId;
-        //    var data = (ExamsPassed)e.Data;
-        //    TESTTEMP = data.Name;
-        //}
+        void paginationClicked(int page)
+        {
+            pageIndex = page;
+            getPage();
+        }
+
+        void getPage()
+        {
+            int startIndex = pageIndex * pageSize;
+            int sliceSize = pageIndex + 1 == vs.Count() ? pageSize - ((pageSize * vs.Count()) - exams.Count()) : pageSize;
+            try
+            {
+                examsShown = exams.GetRange(startIndex, sliceSize);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
 
 
     }

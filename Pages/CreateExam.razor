@@ -6,9 +6,9 @@
 @inject CreateExamService createExamService
 @inject LoginHandlerService loginHandleServices
 
-<h3>CreateExam</h3>
 
-<h1>Stwórz egzamin</h1>
+
+<h1>Create your exam!</h1>
 
 @if (creatingStep == 0)
 {
@@ -29,14 +29,19 @@ else if (creatingStep == 1)
     <div class="form-group">
         <label for="questionInput">Question text</label>
         <input class="@questionTextClass" id="questionInput" placeholder="Question text" @bind="@QuestionText" />
-        <input type="checkbox" @bind="isMultiChoice" @onclick="eventArgs => { clearAnwsers(); }"/>
+        <br />
+        <label for="checkIsMultiChoice">Is multi-choice?</label>
+        <input type="checkbox" id="checkIsMultiChoice" @bind="isMultiChoice" @onclick="eventArgs => { clearAnwsers(); }" />
     </div>
 
     @foreach (var anwser in anwsersActual)
     {
         <div class="form-group">
+
             <input class="form-control" @bind="@anwser.anwserText" />
-            <input type="checkbox" @bind="anwser.isProper" @onclick="eventArgs => { CheckboxClicked(anwser); }" />
+            
+            <label for="@anwser">Is proper?</label>
+            <input type="checkbox" @bind="anwser.isProper" id="@anwser" @onclick="eventArgs => { CheckboxClicked(anwser); }" />
             <br />
         </div>
     }

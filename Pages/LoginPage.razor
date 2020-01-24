@@ -58,6 +58,8 @@ else
     void logOutFromService()
     {
         loggedIn = !loginHandleServices.logout();
+        StateHasChanged();
+        myService.CallRequestRefresh();
     }
 
 }

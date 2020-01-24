@@ -49,7 +49,7 @@ namespace BlazorTEST.Data
 
                 if (list.Count > 0)
                 {
-                    return true;
+                    return false;
                 }
                 else
                 {

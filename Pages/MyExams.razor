@@ -9,15 +9,12 @@
 <h1>My Exams</h1>
 <h2>Wykonane egzaminy</h2>
 
-<ContextMenu Id="myMenu">
+<ContextMenu Id="myMenu" >
     <Item OnClick="@OnClick">Show details</Item>
     <Item OnClick="@GetExam">Retake</Item>
 </ContextMenu>
 
 
-<div>
-    <text>@TESTTEMP</text>
-</div>
 <div>
     <table class="table table-hover">
 
@@ -33,7 +30,7 @@
             </th>
         </tr>
         <tbody>
-            @foreach (var exam in examsTaken)
+            @foreach (var exam in examsShown)
             {
 
                 <ContextMenuTrigger WrapperTag="tr" MenuId="myMenu" Data="exam">
@@ -62,6 +59,18 @@
         }
             </tbody>
         </table>
+        <div >
+            <nav aria-label="...">
+                <ul class="pagination pagination-lg justify-content-end">
+                    @foreach( int i in vs )
+                    {
+                        <li class="page-item">
+                            <a class="page-link" @onclick="eventArgs => { paginationClicked(i); }" >@(i+1)</a>
+                        </li>                      
+                    }
+                </ul>
+            </nav>
+        </div>
     </div>
     <h2>Egzaminy które utworzono</h2>
     <div>
@@ -113,19 +122,27 @@
 
         string TESTTEMP = "StartValue";
 
-
+        int[] vs = new int[1];
         int examTakenCount = 0;
         int examCreatedCount = 0;
         Int64 userId;
         List<ExamsPassed> examsTaken = new List<ExamsPassed>();
+        List<ExamsPassed> examsShown = new List<ExamsPassed>();
         List<ExamsCreated> examsCreated = new List<ExamsCreated>();
 
+        readonly  int  pageSize = 6;
+        int pagesAmount = 0;
 
+
+        int pageIndex = 0;
 
         protected override void OnInitialized()
         {
 
         }
+
+
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -134,10 +151,20 @@
             userId = loginHandleServices.userId;
             try
             {
+
                 examsTaken = await ExamsServices.getTakenExams(userId);
                 examsCreated = await ExamsServices.getCreatedExams(userId);
                 examTakenCount = await ExamsServices.getTakenExamsCount(userId);
                 examCreatedCount = await ExamsServices.getTakenExamsCount(userId);
+
+
+                examsShown = examsTaken.GetRange(0, pageSize);
+                pagesAmount = (int)Math.Ceiling((float)examsTaken.Count() / (float)pageSize);
+                vs = new int[pagesAmount];
+                for(int i = 0; i < pagesAmount;i++)
+                {
+                    vs[i] = i;
+                }
             }
             catch (Exception ex)
             {
@@ -162,9 +189,27 @@
 
         void navToCreateExam()
         {
-             NavigationManager.NavigateTo("/CreateExam");
+            NavigationManager.NavigateTo("/CreateExam");
         }
 
+        void paginationClicked(int page)
+        {
+            pageIndex = page;
+            getPage();
+        }
 
+        void getPage()
+        {
+            int startIndex = pageIndex * pageSize;
+            int sliceSize = pageIndex+1 == vs.Count() ? pageSize  - ((pageSize * vs.Count()) - examsTaken.Count())  : pageSize;
+            try
+            {
+                examsShown = examsTaken.GetRange(startIndex,sliceSize);
+            }
+            catch(Exception ex)
+            {
+
+            }
+        }
 
     }

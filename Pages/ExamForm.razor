@@ -6,7 +6,7 @@
 
 @inject QuestionsService questionsService
 @inject LoginHandlerService loginHandleServices
-<h3>ExamForm</h3>
+
 
 
 <div class="@StartClass" >
@@ -25,27 +25,32 @@
 
 @if(examStarted)
 {
-    <div>
-        <text>
-            @actualQuestion.questionText
-        </text>
-    </div>
-    <div>
-        <form>
+ 
+        <div class="form-group">
+            <h2>
+                <p class="font-weight-bolder">
+                    @actualQuestion.questionText
+                </p>
+            </h2>
+        </div>
+        <div>
+
             @foreach (var anwser in anwsers)
             {
-                <text>
-                    @anwser.anwserText;
-                    <input type="checkbox"  @bind="anwser.isMarked"  @onclick="eventArgs => { CheckboxClicked(anwser); }" /><br />
-                 
-                </text>
+
+
+                <input class="form-check-input" type="checkbox" id="@anwser.answerId" @bind="anwser.isMarked" @onclick="eventArgs => { CheckboxClicked(anwser); }" />
+                <p class="font-weight-bold">@anwser.anwserText</p>
+                <br />
+
 
             }
-        </form>
-    </div>
-    <div>
-        <button class="btn btn-primary" @onclick="getNextQuestion">Get Next Question!</button>
-    </div>
+
+        </div>
+        <div class="form-group">
+            <button class="btn btn-primary" @onclick="getNextQuestion">Get Next Question!</button>
+        </div>
+   
 }
 
 @if(showResult)
